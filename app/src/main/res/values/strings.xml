@@ -1,0 +1,32 @@
+<resources>
+    <string name="app_name">别碰无障碍</string>
+    <string name="xposed_desc">Hook系统框架阻止应用读取无障碍</string>
+    <string name="about_module">This module is made by YukiHookAPI. \nLearn more https://github.com/HighCapable/YuKiHookAPI</string>
+    <string name="system_version">System version: %1$s</string>
+    <string name="module_version">Module version: %1$s</string>
+    <string name="module_not_activated">Module not activated</string>
+    <string name="module_not_fully_activated">Module not fully activated</string>
+    <string name="module_is_activated">Module is activated</string>
+    <string name="display_settings">Display settings</string>
+    <string name="hide_app_icon_on_launcher">Hide app icons on launcher</string>
+    <string name="hide_app_icon_on_launcher_tip">After hiding the app icon, the interface may be closed and will no longer be displayed on the launcher. You can find and open the module settings in LSPosed.</string>
+    <string name="hide_app_icon_on_launcher_notice">Note: Be sure to turn off the \"Force apps to show launcher icons\" feature in LSPosed</string>
+    <string name="apps_settings">Apps Settings</string>
+    <string name="mgr_apps_config">Management Apps Config</string>
+    <string name="apps_config_tip">Disable apps read accessibility</string>
+    <string name="confirm">Confirm</string>
+    <string name="cancel">Cancel</string>
+    <string name="more">More</string>
+    <string name="notice">Notice</string>
+    <string name="loading">Loading</string>
+    <string name="filter_by_condition">Filter by Condition</string>
+    <string name="no_list_result">No result to display</string>
+    <string name="back">Back</string>
+    <string name="app_name_or_pkg_name">apps name or package name</string>
+    <string name="user_apps">User apps</string>
+    <string name="system_apps">System apps</string>
+    <string name="all_apps">All apps</string>
+    <string name="clear_filters">Clear Filters</string>
+    <string name="result_count">%1$s results found</string>
+    <string name="accessibility_check">Accessibility Check</string>
+</resources>

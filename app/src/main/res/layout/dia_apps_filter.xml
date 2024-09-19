@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingLeft="15dp"
+    android:paddingTop="15dp"
+    android:paddingRight="15dp">
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/app_filters_edit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:hint="@string/app_name_or_pkg_name"
+            android:singleLine="true" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <RadioGroup
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal">
+
+        <com.google.android.material.radiobutton.MaterialRadioButton
+            android:id="@+id/filters_radio_user"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:checked="true"
+            android:singleLine="true"
+            android:text="@string/user_apps" />
+
+        <com.google.android.material.radiobutton.MaterialRadioButton
+            android:id="@+id/filters_radio_system"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:singleLine="true"
+            android:text="@string/system_apps" />
+
+        <com.google.android.material.radiobutton.MaterialRadioButton
+            android:id="@+id/filters_radio_all"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:text="@string/all_apps" />
+    </RadioGroup>
+</LinearLayout>

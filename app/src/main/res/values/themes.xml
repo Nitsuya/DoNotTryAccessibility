@@ -1,0 +1,5 @@
+<resources>
+    <!-- Base application theme. -->
+    <style name="Theme.AppDefault" parent="Theme.Material3.DayNight">
+    </style>
+</resources>

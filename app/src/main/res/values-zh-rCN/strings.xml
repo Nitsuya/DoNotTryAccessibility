@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">DoNotTryAccessibility</string>
+    <string name="xposed_desc">Hook系统框架阻止应用读取无障碍</string>
+    <string name="about_module">此模块使用 YukiHookAPI 构建。\n了解更多 https://github.com/HighCapable/YuKiHookAPI</string>
+    <string name="system_version">系统版本：%1$s</string>
+    <string name="module_version">模块版本：%1$s</string>
+    <string name="module_not_activated">模块未激活</string>
+    <string name="module_not_fully_activated">模块未完全激活，请重启系统</string>
+    <string name="module_is_activated">模块已激活</string>
+    <string name="display_settings">显示设置</string>
+    <string name="hide_app_icon_on_launcher">在桌面隐藏模块图标</string>
+    <string name="hide_app_icon_on_launcher_tip">隐藏模块图标后界面可能会被关闭，将不会再在桌面显示，你可以在 LSPosed 中找到模块设置并打开。</string>
+    <string name="hide_app_icon_on_launcher_notice">注意：请务必在 LSPosed 中关闭“强制显示桌面图标”功能</string>
+    <string name="apps_settings">应用设置</string>
+    <string name="accessibility_check">无障碍检查</string>
+    <string name="mgr_apps_config">管理应用配置</string>
+    <string name="apps_config_tip">禁用应用读取无障碍</string>
+    <string name="confirm">确定</string>
+    <string name="cancel">取消</string>
+    <string name="more">更多</string>
+    <string name="notice">提示</string>
+    <string name="loading">加载中</string>
+    <string name="filter_by_condition">按条件过滤</string>
+    <string name="no_list_result">没有结果可以显示</string>
+    <string name="back">返回</string>
+    <string name="app_name_or_pkg_name">应用名称或包名</string>
+    <string name="user_apps">用户应用</string>
+    <string name="system_apps">系统应用</string>
+    <string name="all_apps">全部应用</string>
+    <string name="clear_filters">清除条件</string>
+    <string name="result_count">共 %1$s 个结果</string>
+</resources>
