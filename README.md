@@ -6,7 +6,7 @@ Hook System Framework 让应用认为没有开启无障碍服务
 [![GitHub Release](https://img.shields.io/github/v/release/Xposed-Modules-Repo/io.github.nitsuya.donottryaccessibility)](https://github.com/Xposed-Modules-Repo/io.github.nitsuya.donottryaccessibility/releases)
 ![Xposed Module](https://img.shields.io/badge/Xposed-Module-blue)
 [![License](https://img.shields.io/github/license/nitsuya/DoNotTryAccessibility)](https://github.com/nitsuya/DoNotTryAccessibility/blob/main/LICENSE)
-![Android SDK min 31](https://img.shields.io/badge/Android%20SDK-%3E%3D%2031-brightgreen?logo=android)
+![Android SDK min 27](https://img.shields.io/badge/Android%20SDK-%3E%3D%2027-brightgreen?logo=android)
 ![Android SDK target 34](https://img.shields.io/badge/Android%20SDK-target%2034-brightgreen?logo=android)
 
 -----
