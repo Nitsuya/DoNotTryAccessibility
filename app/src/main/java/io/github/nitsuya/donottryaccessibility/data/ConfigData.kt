@@ -1,151 +1,156 @@
-/*
- * This file is created by fankes on 2022/10/1.
- */
-@file:Suppress("MemberVisibilityCanBePrivate")
-
 package io.github.nitsuya.donottryaccessibility.data
 
 import android.content.Context
-import com.highcapable.yukihookapi.hook.factory.prefs
+import android.util.Xml
 import com.highcapable.yukihookapi.hook.log.YLog
 import com.highcapable.yukihookapi.hook.param.PackageParam
-import com.highcapable.yukihookapi.hook.xposed.prefs.data.PrefsData
 import io.github.nitsuya.donottryaccessibility.BuildConfig
-import io.github.nitsuya.donottryaccessibility.utils.tool.FrameworkTool
+import org.xmlpull.v1.XmlPullParser
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
 
-/**
- * 全局配置存储控制类
- */
 object ConfigData {
-
+    private const val CONFIG_FILENAME = "config.xml"
     private const val BLOCK_APPS = "_block_apps"
 
-    val blockApps by lazy {
-        PrefsDataSetString(BLOCK_APPS, hashSetOf(BuildConfig.APPLICATION_ID))
-    }
+    private var configFile: File? = null
+    private val dataMap = mutableMapOf<String, HashSet<String>>()
 
-    fun refresh() {
-        blockApps.refresh()
-    }
+    val blockApps by lazy { PrefsDataSetString(BLOCK_APPS, hashSetOf(BuildConfig.APPLICATION_ID)) }
 
-    /** 当前实例 - [Context] or [PackageParam] */
+    fun refresh() = blockApps.refresh()
+
     private var instance: Any? = null
 
-    /**
-     * 初始化存储控制类
-     * @param instance 实例 - 只能是 [Context] or [PackageParam]
-     * @throws IllegalStateException 如果类型错误
-     */
     fun init(instance: Any) {
+        this.instance = instance
         when (instance) {
-            is Context, is PackageParam -> this.instance = instance
+            is Context -> {
+                configFile = File(instance.filesDir, CONFIG_FILENAME)
+                loadConfig()
+            }
+            is PackageParam -> {} // Do nothing for PackageParam as it's not used for file operations
             else -> error("Unknown type for init ConfigData")
         }
     }
 
-    /**
-     * 读取 [Set]<[String]> 数据
-     * @param key 键值名称
-     * @return [Set]<[String]>
-     */
-    internal fun getStringSet(key: String, value: Set<String> = hashSetOf()) = when (instance) {
-        is Context -> (instance as Context).prefs().getStringSet(key, value)
-        is PackageParam -> (instance as PackageParam).prefs.getStringSet(key, value)
-        else -> error("Unknown type for get prefs data")
+    private fun loadConfig() {
+        if (configFile?.exists() != true) return
+        try {
+            FileInputStream(configFile!!).use { input ->
+                val parser = Xml.newPullParser()
+                parser.setInput(input, "UTF-8")
+                var eventType = parser.eventType
+                var currentSetName: String? = null
+
+                while (eventType != XmlPullParser.END_DOCUMENT) {
+                    when (eventType) {
+                        XmlPullParser.START_TAG -> {
+                            if (parser.name == "set") {
+                                currentSetName = parser.getAttributeValue(null, "name")
+                                currentSetName?.let { dataMap[it] = hashSetOf() }
+                            } else if (parser.name == "string" && currentSetName != null) {
+                                parser.next()
+                                if (parser.eventType == XmlPullParser.TEXT) {
+                                    dataMap[currentSetName]?.add(parser.text)
+                                }
+                            }
+                        }
+                        XmlPullParser.END_TAG -> {
+                            if (parser.name == "set") currentSetName = null
+                        }
+                    }
+                    eventType = parser.next()
+                }
+            }
+        } catch (e: Exception) {
+            YLog.error("Failed to load config: ${e.message}")
+        }
     }
 
-    /**
-     * 存入 [Set]<[String]> 数据
-     * @param key 键值名称
-     * @param value 键值内容
-     */
+    private fun saveConfig() {
+        try {
+            FileOutputStream(configFile!!).use { output ->
+                val serializer = Xml.newSerializer()
+                serializer.setOutput(output, "UTF-8")
+                serializer.setFeature("http://xmlpull.org/v1/doc/features.html#indent-output", true)
+                serializer.startDocument("UTF-8", true)
+                serializer.startTag("", "map")
+
+                dataMap.forEach { (key, value) ->
+                    serializer.startTag("", "set")
+                    serializer.attribute("", "name", key)
+                    value.forEach { item ->
+                        serializer.startTag("", "string")
+                        serializer.text(item)
+                        serializer.endTag("", "string")
+                    }
+                    serializer.endTag("", "set")
+                }
+
+                serializer.endTag("", "map")
+                serializer.endDocument()
+            }
+        } catch (e: Exception) {
+            YLog.error("Failed to save config: ${e.message}")
+        }
+    }
+
+    internal fun getStringSet(key: String, defaultValue: Set<String> = hashSetOf()): Set<String> =
+        when (instance) {
+            is Context -> dataMap[key] ?: defaultValue
+            is PackageParam -> (instance as PackageParam).prefs.getStringSet(key, defaultValue)
+            else -> defaultValue
+        }
+
     internal fun putStringSet(key: String, value: Set<String>) {
         when (instance) {
-            is Context -> (instance as Context).prefs().edit { putStringSet(key, value) }
-            is PackageParam -> YLog.warn("Not support for this method")
-            else -> error("Unknown type for put prefs data")
+            is Context -> {
+                dataMap[key] = HashSet(value)
+                saveConfig()
+            }
+            is PackageParam -> YLog.warn("Not support for this method in Xposed environment")
+            else -> error("Unknown type for put data")
         }
     }
 
-    /**
-     * 读取 [Int] 数据
-     * @param data 键值数据模板
-     * @return [Int]
-     */
-    internal fun getInt(data: PrefsData<Int>) = when (instance) {
-        is Context -> (instance as Context).prefs().get(data)
-        is PackageParam -> (instance as PackageParam).prefs.get(data)
-        else -> error("Unknown type for get prefs data")
-    }
+    data class PrefsDataSetString(
+        private val key: String,
+        private var data: HashSet<String> = hashSetOf()
+    ) {
+        init { refresh() }
 
-    /**
-     * 存入 [Int] 数据
-     * @param data 键值数据模板
-     * @param value 键值内容
-     */
-    internal fun putInt(data: PrefsData<Int>, value: Int) {
-        when (instance) {
-            is Context -> (instance as Context).prefs().edit { put(data, value) }
-            is PackageParam -> YLog.warn("Not support for this method")
-            else -> error("Unknown type for put prefs data")
-        }
-    }
-
-    /**
-     * 读取 [Boolean] 数据
-     * @param data 键值数据模板
-     * @return [Boolean]
-     */
-    internal fun getBoolean(data: PrefsData<Boolean>) = when (instance) {
-        is Context -> (instance as Context).prefs().get(data)
-        is PackageParam -> (instance as PackageParam).prefs.get(data)
-        else -> error("Unknown type for get prefs data")
-    }
-
-    /**
-     * 存入 [Boolean] 数据
-     * @param data 键值数据模板
-     * @param value 键值内容
-     */
-    internal fun putBoolean(data: PrefsData<Boolean>, value: Boolean) {
-        when (instance) {
-            is Context -> (instance as Context).prefs().edit { put(data, value) }
-            is PackageParam -> YLog.warn("Not support for this method")
-            else -> error("Unknown type for put prefs data")
-        }
-    }
-
-    data class PrefsDataSetString(private val key: String, private var data: HashSet<String> = hashSetOf()){
-        init {
-            refresh()
-        }
-        internal fun refresh(){
+        internal fun refresh() {
             data = getStringSet(key, data).toHashSet()
         }
-        internal fun callRefresh(){
+
+        internal fun callRefresh() {
             when (instance) {
-                is Context -> FrameworkTool.refreshFrameworkPrefsData(instance as Context)
+                is Context -> refresh()
                 is PackageParam -> YLog.warn("Not support for this method")
                 else -> error("Unknown type for get prefs data")
             }
         }
+
         fun contains(element: String) = data.contains(element)
+
         fun add(element: String) {
-            if(data.add(element)){
+            if (data.add(element)) {
                 putStringSet(key, data)
                 callRefresh()
             }
         }
+
         fun remove(element: String) {
-            if(data.remove(element)){
+            if (data.remove(element)) {
                 putStringSet(key, data)
                 callRefresh()
             }
         }
-        fun switch(element: String){
-            if(!contains(element)) add(element)
-            else remove(element)
+
+        fun switch(element: String) {
+            if (!contains(element)) add(element) else remove(element)
         }
     }
-
 }
